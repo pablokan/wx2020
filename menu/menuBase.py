@@ -46,7 +46,7 @@ class MyApp(App):
         if id == 102:
             self.tc.SetValue("metiste la opción Archivo --> Abrir")
         if id == 201:
-            f2 = Frame(None)
+            f2 = Frame(None, size=(600, 100))
             f2.Show()
 
         if id == 202:

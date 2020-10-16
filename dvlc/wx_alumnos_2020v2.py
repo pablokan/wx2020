@@ -1,13 +1,16 @@
+## wx_alumnos_BD_2020_search_menu.py + creación de base de datos vacía
+
 from wx import *
 from wx.dataview import * 
 import sqlite3
+from sqlite3 import Error
+
 
 
 class MyApp(App):
     def OnInit(self):
         f1 = Frame(None, -1, "Listado de Alumnos", size=(700, 500))
         p1 = self.p1 = Panel(f1)
-
         self.dvlc = dvlc = DataViewListCtrl(p1)
         dvlc.Bind(EVT_DATAVIEW_ITEM_VALUE_CHANGED, self.modif)
         dvlc.AppendTextColumn('#', width=30)
@@ -21,28 +24,111 @@ class MyApp(App):
             c.Sortable = True
             c.Reorderable = True
 
-        hor = BoxSizer(HORIZONTAL)
-        b = Button(p1, -1, "&Carga de archivo")
-        bA = Button(p1, -1, "&Alta")
-        bB = Button(p1, -1, "&Borrar")
-        hor.Add(b)
-        hor.Add(bA)
-        hor.Add(bB)
+        self.nombreBD = nombreBD = TextCtrl(p1, style = TE_PROCESS_ENTER)
+        self.search = search = SearchCtrl(p1, size=(-1, 33))
+        search.Hide()
+        search.ShowCancelButton(True)
+       
         sizer = BoxSizer(VERTICAL)
         sizer.Add(dvlc, 1, EXPAND)
-        b.Bind(EVT_BUTTON, self.cargaDatos)
-        bA.Bind(EVT_BUTTON, self.alta)
-        bB.Bind(EVT_BUTTON, self.borrar)
-        sizer.Add(hor)
+        sizer.Add(nombreBD, 0, EXPAND)
+        sizer.Add(search, 0, EXPAND)
+        search.Bind(EVT_TEXT, self.buscar)
         p1.SetSizer(sizer)
+
+# menu 
+        f1.CreateStatusBar()
+        f1.SetStatusText("Esto va en la barra de estado")
+
+        menuBar = MenuBar()
+
+        menu1 = Menu()
+        menu1.Append(101, "&Carga", "Traer todos los datos")
+        menu1.Append(102, "&Alta", "Insertar un dato nuevo")
+        menu1.Append(106, "&Nueva", "Crea una base de datos vacía")
+        menu1.AppendSeparator()
+        menu1.Append(103, "&Eliminar", "Borrar fila")
+        menu1.AppendSeparator()
+        menu1.Append(104, "&Buscar", "Buscar por nombre")
+        menu1.Append(105, "&Salir", "Cerrar el programa")
+        menuBar.Append(menu1, "&Archivo")
+
+        menu2 = Menu()
+        menu2.Append(201, "Documentación")
+        menu2.Append(202, "Acerca de")
+        menuBar.Append(menu2, "a&Yuda")
+
+        f1.SetMenuBar(menuBar)
+
+        idList = [101, 102, 103, 104, 105, 106, 201, 202]
+        for e in idList:
+            f1.Bind(EVT_MENU, self.accion, id=e)        
+
         f1.Show()
         return True
 
-    def cargaDatos(self, event):
+    def accion(self, event):
+        id = event.GetId()
+        if id == 101:
+            self.cargaDatos()
+        if id == 102:
+            self.alta()
+        if id == 103:
+            self.borrar()
+        if id == 104:
+            self.search.Show()
+            self.p1.Layout()
+            self.search.SetFocus()
+        if id == 201:
+            f2 = Frame(None, size=(600, 100))
+            f2.Show()
+        if id == 202:
+            print("opción 'Acerca de'")
+        if id == 105:
+            self.f.Close()
+        if id == 106: 
+            self.nombreBD.Show()
+            self.p1.Layout()
+            self.nombreBD.SetFocus()
+            self.nombreBD.Bind(EVT_TEXT_ENTER, self.nueva)
+
+    def nueva(self, event):
+        nBD = self.nombreBD.GetValue() + ".db"
+        con = sqlite3.connect(nBD)
+        self.nombreBD.Hide()
+        texto = nBD + " creada!"
+        mensaje = MessageBox(texto)
+        crea_datos = """ CREATE TABLE IF NOT EXISTS datos (
+                                        id integer PRIMARY KEY,
+                                        dni text,
+                                        nombre text NOT NULL,
+                                        comision text NOT NULL,
+                                        sexo text,
+                                        fnac text
+                                    ); """
+
+        cur = con.cursor()
+        cur.execute(crea_datos)      
+        con.close()
+
+    def buscar(self, event):
+        print("--------------------------")
+        busco = self.search.GetValue()
+        num = self.search.GetLastPosition()
+        tot = self.dvlc.GetItemCount()
+        for i in range(tot):
+            self.dvlc.DeleteItem(0)
+
+        for i in range(len(self.busqueda)):
+            if busco == self.busqueda[i][2][:num]:
+                self.dvlc.AppendItem(self.busqueda[i])
+                print("#", self.busqueda[i][2])
+
+    def cargaDatos(self):
         def recupBD():
             con = sqlite3.connect("alumnos2020.db")
             cur = con.cursor()
-            cur.execute("SELECT * FROM datos")
+            cur.execute("SELECT * FROM datos ORDER BY Nombre")
             tuplas = cur.fetchall()
             print(tuplas)
             listaA = [list(e) for e in tuplas]
@@ -55,13 +141,13 @@ class MyApp(App):
         print(lista)
         for e in lista:
             self.dvlc.AppendItem(e)
+        self.busqueda = lista
 
     def modif(self, evt):
         def grabaBD(id, dni, nombre, comision, sexo, fnac):
             con = sqlite3.connect("alumnos2020.db")
             cur = con.cursor()
             actu = f"UPDATE datos SET dni='{dni}', nombre='{nombre}' WHERE id={id}"
-            #actu = "UPDATE datos SET dni='" + dni + "', nombre='" + nombre + "' WHERE id=" + str(id)
             cur.execute(actu)
             con.commit()
             con.close()
@@ -75,7 +161,7 @@ class MyApp(App):
         fnac = self.dvlc.GetTextValue(row, 5)
         grabaBD(id, dni, nombre, comision, sexo, fnac)
 
-    def alta(self, event):
+    def alta(self):
         f2 = Frame(None, -1, "Alta")
         p2 = Panel(f2)
         col1 = BoxSizer(VERTICAL)
@@ -126,7 +212,7 @@ class MyApp(App):
         con.commit()
         con.close()
 
-    def borrar(self, event):
+    def borrar(self):
         def borraBD(id):
             con = sqlite3.connect("alumnos2020.db")
             cur = con.cursor()
