@@ -11,8 +11,8 @@ class MyApp(App):
         ib2 = Image("em02.jpg", BITMAP_TYPE_ANY).ConvertToBitmap()
         b1 = BitmapButton(p, -1, ib1)
         b2 = BitmapButton(p, -1, ib2)
-        s.Add(b1, 0, ALL|ALIGN_RIGHT, 30)
-        s.Add(b2, 0, ALL|ALIGN_RIGHT, 30)
+        s.Add(b1, 0, ALL|ALIGN_LEFT, 30)
+        s.Add(b2, 0, ALL|ALIGN_LEFT, 30)
         p.SetSizer(s)
         f.Show()
         return True
