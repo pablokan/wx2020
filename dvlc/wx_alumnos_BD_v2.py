@@ -23,7 +23,7 @@ class MiApp(App):
 
         hor = BoxSizer(HORIZONTAL)
         b = Button(p1, -1, "&Carga de archivo")
-        bA = Button(p1, 1001, "&Alta")
+        bA = Button(p1, 1001, "&Nada")
         hor.Add(b)
         hor.Add(bA)
         sizer = BoxSizer(VERTICAL)
@@ -63,14 +63,7 @@ class MiApp(App):
         return self.data[row][col]
 
     def altaOmodi(self, event):
-        if event.GetId() == 1001:
-            etiq = ["DNI", "Nombre", "Comisión", "Sexo", "F.Nac."]
-        elif event.GetId() == 1001:
-            etiq = []
-        f = Frame(None)
-
         pass
-
     
     def cargaDatos(self, e):
         lista = self.recupBD()

@@ -6,13 +6,14 @@ class MyApp(App):
         p = Panel(f)
         s = BoxSizer(VERTICAL)
         st1 = StaticText(p, -1, 'label')
-        fnt = Font(pointSize = 40, family = FONTFAMILY_SWISS, style = FONTSTYLE_NORMAL, weight = FONTWEIGHT_LIGHT)
-        st1.SetFont(fnt)
-        tc1 = TextCtrl(p)
+        sampleList = ["1", "2", "3"]
+        self.lb1 = ListBox(p)
+        list2 = ["4", "5"]
+        self.lb1.SetItems(list2)
         bt1 = Button(p, -1, 'label')
         bt1.Bind(EVT_BUTTON, self.accion)
         s.Add(st1, 0, ALL|EXPAND, 10)
-        s.Add(tc1, 0, ALL|EXPAND, 10)
+        s.Add(self.lb1, 0, ALL|EXPAND, 10)
         s.Add(bt1, 0, ALL|EXPAND, 10)
         
         p.SetSizer(s)
@@ -25,3 +26,7 @@ class MyApp(App):
 
 app = MyApp()
 app.MainLoop()
+
+
+
+

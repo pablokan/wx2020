@@ -72,8 +72,6 @@ class MyApp(App):
         for e in range(0,tuplas.__len__()):
             element=list(tuplas[e])
             print(element)
-            element[5] = str(element[5])
-            element[6] = str(element[6])
             self.dvlc.AppendItem(element)
 
 
@@ -179,18 +177,83 @@ class MyApp(App):
     
 #Borrar cliente
     def borrarClientes(self, event):
-            def borraBD(ape):
+            def borraBD(nombre):
                 con = sqlite3.connect("clientes1.db")
                 cur = con.cursor()
-                dele = f"DELETE from datos WHERE apellido='{ape}'"
-                print(dele)
+                dele = f"DELETE from datos WHERE nombre={nombre}"
                 cur.execute(dele)
                 con.commit()
                 con.close()
             row = self.dvlc.GetSelectedRow()
-            ape = self.dvlc.GetTextValue(row, 0)
+            nombre = self.dvlc.GetTextValue(row, 0)
             self.dvlc.DeleteItem(row)
-            borraBD(ape)
+            borraBD(nombre)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app = MyApp()
+app.MainLoop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 app = MyApp()

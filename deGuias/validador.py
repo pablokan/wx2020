@@ -8,7 +8,7 @@ class MyValidator(Validator):
         return MyValidator()
 
     def OnChar(self, event):
-        digitos = "0123456789"
+        digitos = "0123456789."
         key = event.GetKeyCode()
         if key == WXK_TAB or chr(key) in digitos:
             event.Skip()

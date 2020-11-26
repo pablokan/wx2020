@@ -33,7 +33,7 @@ class MyApp(App):
         return True
 
     def suma(self, event):
-        s = str(int(self.n1.GetValue()) + int(self.n2.GetValue()))
+        s = str(float(self.n1.GetValue()) + float(self.n2.GetValue()))
         s = self.t.GetLabel() + " = " + s
         self.t.SetLabel(s)
         
